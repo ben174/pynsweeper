@@ -5,12 +5,17 @@ import random
 def main():
     size = 10
     bombs = 20
+    print create_board(size, bombs)
+
+
+def create_board(size, bombs):
     board = []
     for i in xrange(size):
         board.append(['-'] * size)
     lay_bombs(board, bombs)
     calc_heat(board)
     print_board(board)
+    return board
 
 
 def lay_bombs(board, bomb_count):
