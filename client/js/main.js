@@ -1,11 +1,18 @@
 /*global $:false */
 var mc = {
+    boardSize: null,
+    bombCount: null,
     init: function() {
-        var boardSize = 10;
-        var bombCount = 15;
-        $.getJSON('/board/' + boardSize + '/' + bombCount, mc.drawGame);
+        $('#generate-board').click(mc.generateBoard);
+        mc.generateBoard();
+    },
+    generateBoard: function() {
+        mc.boardSize = parseInt($("#board-size").val(), 10);
+        mc.bombCount = parseInt($("#bomb-count").val(), 10);
+        $.getJSON('/board/' + mc.boardSize + '/' + mc.bombCount, mc.drawGame);
     },
     drawGame: function(data) {
+        $("#board").empty();
         $(data).each(function() {
             var row = $("<tr>");
             $(this).each(function() {
@@ -24,6 +31,7 @@ var mc = {
             } else {
                 $(e.target).addClass("flagged").html(mc.flagHTML);
             }
+            mc.checkForWinner();
             return;
         }
         if($(e.target).hasClass("clicked") || $(e.target).hasClass("flagged")) {
@@ -32,6 +40,7 @@ var mc = {
         }
         $(e.target).removeClass("flagged");
         mc.trigger($(e.target));
+        mc.checkForWinner();
     },
     trigger: function(element) {
         if($(element).attr('data-value') === '0') {
@@ -75,6 +84,32 @@ var mc = {
         }
         if($(element).next().attr('data-value') === '0') {
             mc.trigger($(element).next());
+        }
+    },
+    hasWon: function() {
+        // make sure there are as many flags as there are bombs
+        if($("td.flagged").length !== mc.bombCount) {
+            console.log("Flag count doesn't match bomb count yet.");
+            return false;
+        }
+
+        // and make sure all bombs are flagged
+        if($("td[data-value=\\*]:not(.flagged)").length !== 0) {
+            console.log("Some bombs aren't flagged.");
+            return false;
+        }
+
+        // and make sure there aren't any unclicked squares
+        if($("td:not(.clicked):not(.flagged)").length !== 0) {
+            console.log("There are still unclicked squares.");
+            return false;
+        }
+        return true;
+    },
+    checkForWinner: function() {
+        if(mc.hasWon()) {
+            console.log("Winner winner chicken dinner!");
+            alert("You won!");
         }
     },
     bombHTML: '*',
