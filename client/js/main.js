@@ -1,3 +1,4 @@
+/*global $:false */
 var mc = {
     init: function() {
         var boardSize = 10;
@@ -5,10 +6,10 @@ var mc = {
         $.getJSON('/board/' + boardSize + '/' + bombCount, mc.drawGame);
     },
     drawGame: function(data) {
-        $(data).each(function(index, rowData) {
+        $(data).each(function() {
             var row = $("<tr>");
-            $(rowData).each(function(i, value) {
-                var cell = $("<td>").attr('data-value', value).html('&nbsp;');
+            $(this).each(function() {
+                var cell = $("<td>").attr('data-value', this).html('&nbsp;');
                 $(cell).mousedown(mc.cellClicked);
                 $(row).append(cell);
             });
@@ -16,34 +17,55 @@ var mc = {
         });
     },
     cellClicked: function(e) {
+        if(e.which === 3) {
+            $(e.target).removeClass("clicked");
+            if($(e.target).hasClass('flagged')) {
+                $(e.target).removeClass("flagged").html('&nbsp;');
+            } else {
+                $(e.target).addClass("flagged").html('&bull;');
+            }
+            return;
+        }
         if($(e.target).hasClass("clicked") || $(e.target).hasClass("flagged")) {
             console.log("ignoring, already clicked");
             return;
         }
-        if(e.which==3) {
-            $(e.target).removeClass("clicked")
-                .addClass("flagged")
-                .html("&bull;");
-        } else {
-            $(e.target).removeClass("flagged");
-            mc.trigger($(e.target));
-        }
+        $(e.target).removeClass("flagged");
+        mc.trigger($(e.target));
     },
     trigger: function(element) {
-        if($(element).attr('data-value') == '0') {
+        if($(element).attr('data-value') === '0') {
             mc.expand(element);
+            $(element).html('&nbsp');
+        } else {
+            $(element).text($(element).attr('data-value'));
         }
-        $(element).addClass("clicked").text($(element).attr('data-value'));
+        $(element).addClass("clicked");
     },
     expand: function(element) {
-        $(element).addClass("clicked");
         if($(element).hasClass("clicked")) {
             return;
         }
-        if($(element).prev().attr('data-value') == '0') {
+        $(element).addClass("clicked");
+        // trigger surrounding elements, recursively
+        var prevRow = $(element).parent("tr").prev().children();
+        if(prevRow.length>0) {
+            var upElement = $(prevRow[$(element).index()]);
+            if(upElement.attr('data-value') === '0') {
+                mc.trigger(upElement);
+            }
+        }
+        var nextRow = $(element).parent("tr").next().children();
+        if(nextRow.length>0) {
+            var downElement = $(nextRow[$(element).index()]);
+            if(downElement.attr('data-value') === '0') {
+                mc.trigger(downElement);
+            }
+        }
+        if($(element).prev().attr('data-value') === '0') {
             mc.trigger($(element).prev());
         }
-        if($(element).next().attr('data-value') == '0') {
+        if($(element).next().attr('data-value') === '0') {
             mc.trigger($(element).next());
         }
     }
