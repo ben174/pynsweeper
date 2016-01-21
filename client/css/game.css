@@ -1,0 +1,14 @@
+
+table {
+    width: 400px;
+    height: 400px;
+}
+td {
+    text-align: center;
+    cursor: pointer;
+}
+
+td.clicked {
+    background-color: #FFE;
+    
+}
