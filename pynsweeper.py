@@ -21,6 +21,7 @@ def lay_bombs(board, bomb_count):
             board[x][y] = '*'
             bombs_laid += 1
 
+
 def calc_heat(board):
     size = len(board)
     for y, row in enumerate(board):
@@ -28,28 +29,18 @@ def calc_heat(board):
             if cell == '*':
                 continue
             heat_count = 0
-            # left
-            if x > 0:
-                if board[y][x-1] == '*':
-                    heat_count += 1
-            # right
-            if x+1 < size:
-                if board[y][x+1] == '*':
-                    heat_count += 1
-            # up
+            left = max(0, x-1)
+            right = x+2
+            up = max(0, y-1)
+            down = min(size, y+1)
+            cells = []
             if y > 0:
-                if board[y-1][x] == '*':
-                    heat_count += 1
-            # down
-            if y+1 < size:
-                if board[y+1][x] == '*':
-                    heat_count += 1
+                cells.extend(board[up][left:right])
+            if y < size-1:
+                cells.extend(board[down][left:right])
+            cells.extend(board[y][left:right])
+            heat_count = len([v for v in cells if v == '*'])
             board[y][x] = heat_count
-
-
-
-
-
 
 
 def print_board(board):
@@ -59,12 +50,6 @@ def print_board(board):
             row_str += str(cell) + ' '
         print row_str
 
-# ------x------
-# -----x---x-x-
-# -------------
-# ----x--------
-# -------------
-# -------------
 
 if __name__ == '__main__':
     main()
