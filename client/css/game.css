@@ -6,9 +6,17 @@ table {
 td {
     text-align: center;
     cursor: pointer;
+    font-family: monospace;
+    border: solid 1px #CCC;
 }
 
 td.clicked {
     background-color: #FFE;
-    
 }
+td.clicked[data-value="*"] {
+    background-color: #F00;
+}
+td.clicked[data-value="0"] {
+    color: #CCC;
+}
+
