@@ -8,6 +8,7 @@ td {
     cursor: pointer;
     font-family: monospace;
     border: solid 1px #CCC;
+    background-color: #DDD;
 }
 
 td.clicked {
@@ -18,5 +19,9 @@ td.clicked[data-value="*"] {
 }
 td.clicked[data-value="0"] {
     color: #CCC;
+}
+td.flagged {
+    color: #090;
+    background-color: #BBC;
 }
 
