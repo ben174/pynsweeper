@@ -22,7 +22,7 @@ var mc = {
             if($(e.target).hasClass('flagged')) {
                 $(e.target).removeClass("flagged").html('&nbsp;');
             } else {
-                $(e.target).addClass("flagged").html('&bull;');
+                $(e.target).addClass("flagged").html(mc.flagHTML);
             }
             return;
         }
@@ -38,9 +38,17 @@ var mc = {
             mc.expand(element);
             $(element).html('&nbsp');
         } else {
-            $(element).text($(element).attr('data-value'));
+            var val = $(element).attr('data-value');
+            if(val === '*') {
+                mc.bombHit(element);
+            } else {
+                $(element).text(val);
+            }
         }
         $(element).addClass("clicked");
+    },
+    bombHit: function(element) {
+        $(element).html(mc.bombHTML);
     },
     expand: function(element) {
         if($(element).hasClass("clicked")) {
@@ -68,6 +76,8 @@ var mc = {
         if($(element).next().attr('data-value') === '0') {
             mc.trigger($(element).next());
         }
-    }
+    },
+    bombHTML: '*',
+    flagHTML: '&bull;'
 };
 $(mc.init);
